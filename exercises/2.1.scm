@@ -1,0 +1,11 @@
+(define (generate phrase)
+  (cond ((list? phrase)
+         (mappend generate phrase))
+        ((rewrites phrase)
+         => (compose generate (pa$ random-elt)))
+        (else (list phrase))))
+
+(generate 'sentene)
+;; (a table liked the ball)
+(generate 'sentene)
+;; (a table saw a table)
