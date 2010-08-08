@@ -38,7 +38,6 @@
 
 
 ;; ------------------------------------------------------------------
-
 (define-syntax def-phrase
   (syntax-rules ()
     ((_ (name proc exp1 exp2 ...))
@@ -84,6 +83,7 @@
   (article one-of '(the a))
   (noun one-of  '(man ball woman table))
   (verb one-of '(hit took saw liked)))
+
 
 (sentence)
 ;; (the man saw a table)
@@ -176,3 +176,40 @@
 ;; (the big table to the little man saw a little ball on the big table in the ball)
 (sentence)
 ;; (a little table hit the woman with a table with the red little woman by the red big ball to a ball by the red big big ball with the red table on the big blue red red ball)
+
+(use srfi-1)
+(use util.stream)
+(define (scanl f x xs)
+  (iterator->stream (lambda (n e)
+                      (until (null? xs)
+                        (n x)
+                        (set! x (f x (pop! xs))))
+                      (e))))
+
+
+
+(define-macro (def-related-closures var-binds . proc-binds)
+  `(let ,var-binds
+       (letrec ,proc-binds
+         (values ,@(map car proc-binds)))))
+
+(macroexpand-1
+ '(def-related-closures ((count 0)(step 1))
+    (inc (lambda ()
+           (set! count (+ count step))))
+    (dec (lambda ()
+           (set! count (- count step))))
+    (reset (lambda ()
+             (set! count 0)))))
+
+(let ((count 0) (step 1))
+  (letrec ((inc (lambda ()
+                  (set! count (+ count step))))
+           (dec (lambda ()
+                  (set! count (- count step))))
+           (reset (lambda ()
+                    (set! count 0))))
+    (values inc dec reset)))
+
+
+
