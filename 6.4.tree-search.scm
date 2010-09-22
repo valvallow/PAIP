@@ -137,6 +137,12 @@
                  (let1 sorted ((sorter cost-fn) old new)
                    (if (> beam-width (length sorted))
                           sorted
-                          (subseq sorted 0 beam-search))))))
+                          (subseq sorted 0 beam-width))))))
 
-(beam-search 1 (is 12) binary-tree (diff 12) 2)
+(beam-search 1 (is 12) binary-tree (price-is-right 12) 2)
+;; Search: (1)
+;; Search: (3 2)
+;; Search: (7 6)
+;; Search: (6 14)
+;; Search: (12 13)12
+
