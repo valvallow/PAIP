@@ -2,31 +2,31 @@
 
 (use srfi-1)
 (use gauche.sequence)
-(use liv.debugs)
+(use liv.paip.debugs)
 
-(debug :search)
+;; (debug :search)
 ;; (undebug :search)
 
 (define fail '())
 
-(define (tree-search states goal? successors combiner)
-;;  (debug-indent :search 10 ";; Search: ~a" states)
-  (dbg :search ";; Search: ~a" states)
-  (cond ((null? states) fail)
-        ((goal? (car states))(car states))
-        (else (tree-search (combiner (successors (car states))
-                                     (cdr states))
-                           goal? successors combiner))))
+;; (define (tree-search states goal? successors combiner)
+;; ;;  (debug-indent :search 10 ";; Search: ~a" states)
+;;   (dbg :search ";; Search: ~a" states)
+;;   (cond ((null? states) fail)
+;;         ((goal? (car states))(car states))
+;;         (else (tree-search (combiner (successors (car states))
+;;                                      (cdr states))
+;;                            goal? successors combiner))))
 
-(define (tree-search states goal? successors combiner)
-  (if (null? states)
-      fail
-      (let1 a (car states)
-        (if (goal? a)
-            a
-            (tree-search (combiner (successors a)
-                                   (cdr states))
-                         goal? successors combiner)))))
+;; (define (tree-search states goal? successors combiner)
+;;   (if (null? states)
+;;       fail
+;;       (let1 a (car states)
+;;         (if (goal? a)
+;;             a
+;;             (tree-search (combiner (successors a)
+;;                                    (cdr states))
+;;                          goal? successors combiner)))))
 
 (define (tree-search states goal? successors combiner)
   (if (null? states)
