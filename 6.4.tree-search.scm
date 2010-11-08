@@ -2,7 +2,8 @@
 
 (use srfi-1)
 (use gauche.sequence)
-(use liv.paip.debugs)
+(use liv.paip.debug)
+(use liv.paip.search)
 
 ;; (debug :search)
 ;; (undebug :search)
@@ -76,10 +77,25 @@
 (define (depth-first-search start goal? successors)
   (tree-search (list start) goal? successors append))
 
+(define (breadth-first-search start goal? successors)
+  (tree-search (list start) goal? successors prepend))
+
+(define (best-first-search start goal? successors const-fn)
+  (tree-search (list start) goal? successors (sorter const-fn)))
+
+(define (beam-search start goal? successors cost-fn beam-width)
+  (tree-search (list start) goal? successors
+               (lambda (old new)
+                 (let1 sorted ((sorter cost-fn) old new)
+                   (if (> beam-width (length sorted))
+                          sorted
+                          (subseq sorted 0 beam-width))))))
+
+
 ;; (depth-first-search 1 (is 12) binary-tree)
 ;; endless loop ...
 
-(depth-first-search 1 (is 12)(finite-binary-tree 15))
+;; (depth-first-search 1 (is 12)(finite-binary-tree 15))
 ;; Search: (1)
 ;; Search: (2 3)
 ;; Search: (4 5 3)
@@ -92,11 +108,7 @@
 ;; Search: (6 7)
 ;; Search: (12 13 7)12
 
-
-(define (breadth-first-search start goal? successors)
-  (tree-search (list start) goal? successors prepend))
-
-(breadth-first-search 1 (is 12) binary-tree)
+;; (breadth-first-search 1 (is 12) binary-tree)
 ;; Search: (1)
 ;; Search: (2 3)
 ;; Search: (3 4 5)
@@ -110,11 +122,7 @@
 ;; Search: (11 12 13 14 15 16 17 18 19 20 21)
 ;; Search: (12 13 14 15 16 17 18 19 20 21 22 23)12
 
-
-(define (best-first-search start goal? successors const-fn)
-  (tree-search (list start) goal? successors (sorter const-fn)))
-
-(best-first-search 1 (is 12) binary-tree (diff 12))
+;; (best-first-search 1 (is 12) binary-tree (diff 12))
 ;; Search: (1)
 ;; Search: (3 2)
 ;; Search: (7 6 2)
@@ -123,23 +131,14 @@
 ;; Search: (6 2 28 29 30 31)
 ;; Search: (12 13 2 28 29 30 31)12
 
-(best-first-search 1 (is 12) binary-tree (price-is-right 12))
+;; (best-first-search 1 (is 12) binary-tree (price-is-right 12))
 ;; Search: (1)
 ;; Search: (3 2)
 ;; Search: (7 6 2)
 ;; Search: (6 2 14 15)
 ;; Search: (12 2 13 14 15)12
 
-
-(define (beam-search start goal? successors cost-fn beam-width)
-  (tree-search (list start) goal? successors
-               (lambda (old new)
-                 (let1 sorted ((sorter cost-fn) old new)
-                   (if (> beam-width (length sorted))
-                          sorted
-                          (subseq sorted 0 beam-width))))))
-
-(beam-search 1 (is 12) binary-tree (price-is-right 12) 2)
+;; (beam-search 1 (is 12) binary-tree (price-is-right 12) 2)
 ;; Search: (1)
 ;; Search: (3 2)
 ;; Search: (7 6)
